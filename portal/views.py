@@ -99,13 +99,12 @@ def sector_map_edit(request, slug):
 
 
 @login_required(login_url='portal:login')
+@require_POST
 def sector_map_delete(request, slug):
-    """POST-only delete for a sector map row (guarded by the login decorator)."""
     smap = get_object_or_404(SectorMap, slug=slug)
-    if request.method == 'POST':
-        name = smap.name
-        smap.delete()
-        messages.success(request, f'"{name}" has been removed.')
+    name = smap.name
+    smap.delete()
+    messages.success(request, f'"{name}" has been removed.')
     return redirect('portal:sector_map_list')
 
 
@@ -131,12 +130,12 @@ def property_edit(request, slug):
 
 
 @login_required(login_url='portal:login')
+@require_POST
 def property_delete(request, slug):
     prop = get_object_or_404(Property, slug=slug)
-    if request.method == 'POST':
-        title = prop.title
-        prop.delete()
-        messages.success(request, f'"{title}" has been removed from the portfolio.')
+    title = prop.title
+    prop.delete()
+    messages.success(request, f'"{title}" has been removed from the portfolio.')
     return redirect('portal:dashboard')
 
 
@@ -145,7 +144,8 @@ def seller_leads(request):
     if request.method == 'POST':
         lead_id = request.POST.get('lead_id')
         new_status = request.POST.get('status')
-        if lead_id and new_status:
+        valid_statuses = {s[0] for s in SellerSubmission.STATUS_CHOICES}
+        if lead_id and new_status and new_status in valid_statuses:
             lead = get_object_or_404(SellerSubmission, id=lead_id)
             lead.status = new_status
             lead.save()

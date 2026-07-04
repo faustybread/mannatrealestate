@@ -164,6 +164,10 @@ SESSION_COOKIE_HTTPONLY = True
 CSRF_COOKIE_HTTPONLY = True
 X_FRAME_OPTIONS = 'DENY'
 
+# Sessions expire when the browser closes; hard ceiling of 8 hours.
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+SESSION_COOKIE_AGE = 28800
+
 # Enable these when serving over HTTPS (set DJANGO_HTTPS=true in your .env)
 if os.environ.get('DJANGO_HTTPS', 'False').lower() in ('1', 'true', 'yes'):
     SECURE_SSL_REDIRECT = True
