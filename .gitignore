@@ -1,0 +1,39 @@
+# Environment & secrets
+.env
+.env.*
+!.env.example
+
+# Django
+db.sqlite3
+*.pyc
+__pycache__/
+*.pyo
+*.pyd
+.Python
+*.log
+
+# Django collected static & media (generated at deploy time)
+staticfiles/
+media/
+
+# Virtual environments
+venv/
+env/
+.venv/
+.env/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Build
+dist/
+build/
+*.egg-info/
+node_modules/
