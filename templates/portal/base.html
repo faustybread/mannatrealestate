@@ -1,0 +1,163 @@
+{% load static tailwind_tags %}<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Client Portal · MR Estates{% endblock %}</title>
+    <meta name="robots" content="noindex, nofollow">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    {% tailwind_css %}
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="min-h-screen">
+
+    {% block portal_shell %}
+    {# ─── Portal navigation (auth'd screens only) ────────────── #}
+    {% if user.is_authenticated %}
+    <header class="fixed inset-x-0 top-0 z-40">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 pt-4 sm:pt-6">
+            <nav class="glass rounded-full flex items-center justify-between pl-4 sm:pl-6 pr-2 sm:pr-3 py-2.5 sm:py-3 gap-3">
+                <a href="{% url 'portal:dashboard' %}" class="flex items-center gap-2 sm:gap-3 min-w-0">
+                    <span class="h-8 w-8 rounded-full bg-gradient-to-br from-champagne-200 to-champagne-500 shadow-champagne shrink-0"></span>
+                    <div class="flex flex-col leading-tight min-w-0">
+                        <span class="font-display text-white tracking-widest text-[0.7rem] uppercase truncate">MR Estates</span>
+                        <span class="text-[0.6rem] uppercase tracking-widest text-champagne-300/80 truncate">Client Portal</span>
+                    </div>
+                </a>
+
+                <ul class="hidden md:flex items-center gap-6 lg:gap-8 text-[0.78rem] tracking-widest uppercase text-white/70">
+                    <li><a href="{% url 'portal:dashboard' %}" class="hover:text-white transition">Dashboard</a></li>
+                    <li><a href="{% url 'portal:property_new' %}" class="hover:text-white transition">New Listing</a></li>
+                    <li><a href="{% url 'portal:sector_map_list' %}" class="hover:text-white transition">Sector Maps</a></li>
+                    <li><a href="{% url 'portal:site_visit_leads' %}" class="hover:text-white transition">Visit Leads</a></li>
+                    <li><a href="{% url 'portal:seller_leads' %}" class="hover:text-white transition">Seller Leads</a></li>
+                    <li><a href="{% url 'properties:home' %}" class="hover:text-white transition">Public Site ↗</a></li>
+                </ul>
+
+                <div class="hidden md:flex items-center gap-3">
+                    <span class="hidden lg:inline text-xs tracking-wide text-white/50">
+                        {{ user.get_full_name|default:user.username }}
+                    </span>
+                    <form action="{% url 'portal:logout' %}" method="post" class="inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn-ghost text-xs py-2.5 px-5">Sign Out</button>
+                    </form>
+                </div>
+
+                {# Mobile hamburger #}
+                <button type="button"
+                        id="portal-menu-toggle"
+                        class="md:hidden inline-flex h-11 w-11 items-center justify-center rounded-full glass text-white/90 hover:bg-white/[0.12] transition shrink-0"
+                        aria-controls="portal-menu"
+                        aria-expanded="false"
+                        aria-label="Open menu">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    {# Portal mobile drawer #}
+    <div id="portal-menu"
+         class="fixed inset-0 z-50 hidden md:hidden"
+         role="dialog"
+         aria-modal="true"
+         aria-labelledby="portal-menu-title">
+        <div class="absolute inset-0 bg-midnight-900/70 backdrop-blur-lg" data-portal-menu-close></div>
+
+        <aside class="absolute inset-y-0 right-0 w-full max-w-sm glass-strong border-l border-white/10 flex flex-col
+                      translate-x-4 opacity-0 transition duration-300 ease-out"
+               data-portal-menu-panel>
+            <div class="flex items-center justify-between gap-4 px-6 pt-6 pb-4 border-b border-white/10">
+                <div class="flex items-center gap-3 min-w-0">
+                    <span class="h-8 w-8 rounded-full bg-gradient-to-br from-champagne-200 to-champagne-500 shadow-champagne shrink-0"></span>
+                    <div class="flex flex-col leading-tight min-w-0">
+                        <span id="portal-menu-title" class="font-display text-white tracking-widest text-sm uppercase truncate">MR Estates</span>
+                        <span class="text-[0.55rem] uppercase tracking-widest text-champagne-300/80 truncate">Client Portal</span>
+                    </div>
+                </div>
+                <button type="button"
+                        class="h-11 w-11 rounded-full glass flex items-center justify-center text-white/80 hover:text-white transition shrink-0"
+                        data-portal-menu-close
+                        aria-label="Close menu">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+                </button>
+            </div>
+
+            <nav class="flex-1 overflow-y-auto px-6 py-8">
+                <p class="eyebrow text-[0.55rem] mb-4">Signed in as</p>
+                <p class="text-white text-sm mb-6 truncate">{{ user.get_full_name|default:user.username }}</p>
+
+                <ul class="space-y-2 text-white">
+                    {% with link_class="flex items-center justify-between gap-4 rounded-2xl px-5 py-4 text-sm uppercase tracking-widest hover:bg-white/[0.06] transition" %}
+                    <li><a href="{% url 'portal:dashboard' %}" class="{{ link_class }}">Dashboard <span aria-hidden="true" class="text-white/30">→</span></a></li>
+                    <li><a href="{% url 'portal:property_new' %}" class="{{ link_class }}">New Listing <span aria-hidden="true" class="text-white/30">→</span></a></li>
+                    <li><a href="{% url 'portal:sector_map_list' %}" class="{{ link_class }}">Sector Maps <span aria-hidden="true" class="text-white/30">→</span></a></li>
+                    <li><a href="{% url 'portal:site_visit_leads' %}" class="{{ link_class }}">Visit Leads <span aria-hidden="true" class="text-white/30">→</span></a></li>
+                    <li><a href="{% url 'portal:seller_leads' %}" class="{{ link_class }}">Seller Leads <span aria-hidden="true" class="text-white/30">→</span></a></li>
+                    <li><a href="{% url 'properties:home' %}" class="{{ link_class }}">Public Site <span aria-hidden="true" class="text-white/30">↗</span></a></li>
+                    {% endwith %}
+                </ul>
+            </nav>
+
+            <div class="p-6 border-t border-white/10 bg-midnight-900/40">
+                <form action="{% url 'portal:logout' %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-ghost w-full justify-center">Sign Out</button>
+                </form>
+            </div>
+        </aside>
+    </div>
+    {% endif %}
+
+    <main class="{% if user.is_authenticated %}pt-24 md:pt-32{% endif %}">
+        {% if messages %}
+        <div class="fixed top-24 inset-x-4 sm:left-auto sm:right-6 z-50 space-y-3 sm:max-w-sm">
+            {% for message in messages %}
+            <div class="glass rounded-2xl px-4 py-3 text-sm border-l-4 {% if message.tags == 'success' %}border-champagne-300{% elif message.tags == 'error' %}border-rose-400{% else %}border-white/40{% endif %}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </main>
+    {% endblock %}
+
+    {# Portal drawer JS — only wired when the drawer is rendered. #}
+    <script>
+    (function () {
+        const toggle = document.getElementById('portal-menu-toggle');
+        const menu   = document.getElementById('portal-menu');
+        if (!toggle || !menu) return;
+        const panel  = menu.querySelector('[data-portal-menu-panel]');
+
+        const open = () => {
+            menu.classList.remove('hidden');
+            requestAnimationFrame(() => panel.classList.remove('translate-x-4', 'opacity-0'));
+            toggle.setAttribute('aria-expanded', 'true');
+            document.body.style.overflow = 'hidden';
+        };
+        const close = () => {
+            panel.classList.add('translate-x-4', 'opacity-0');
+            toggle.setAttribute('aria-expanded', 'false');
+            document.body.style.overflow = '';
+            setTimeout(() => menu.classList.add('hidden'), 200);
+        };
+        toggle.addEventListener('click', open);
+        menu.querySelectorAll('[data-portal-menu-close]').forEach(el => el.addEventListener('click', close));
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && !menu.classList.contains('hidden')) close();
+        });
+        window.matchMedia('(min-width: 768px)').addEventListener('change', (e) => {
+            if (e.matches && !menu.classList.contains('hidden')) close();
+        });
+    })();
+    </script>
+</body>
+</html>

@@ -1,0 +1,8 @@
+{% load rupees %}
+{# Small stat card. Params: label, value, accent (bool), money (bool). #}
+<div class="glass rounded-2xl p-6 flex flex-col justify-between {% if accent %}shadow-champagne{% endif %}">
+    <p class="text-[0.65rem] uppercase tracking-widest text-white/50">{{ label }}</p>
+    <p class="font-display text-4xl font-light text-white mt-6 tracking-tight whitespace-nowrap">
+        {% if money %}{{ value|inr }}{% else %}{{ value }}{% endif %}
+    </p>
+</div>

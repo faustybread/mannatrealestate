@@ -1,0 +1,171 @@
+{% extends "portal/base.html" %}
+
+{% block title %}{% if mode == "new" %}New Listing{% else %}Edit · {{ property.title }}{% endif %} · Portal{% endblock %}
+
+{% block content %}
+<section class="mx-auto max-w-4xl px-6 py-10">
+
+    <div class="mb-10">
+        <a href="{% url 'portal:dashboard' %}" class="text-xs uppercase tracking-widest text-white/40 hover:text-white/70 transition">
+            ← Back to dashboard
+        </a>
+        <div class="mt-6 flex items-end justify-between gap-6">
+            <div>
+                <p class="eyebrow mb-3">{% if mode == "new" %}Add a listing{% else %}Update listing{% endif %}</p>
+                <h1 class="font-display text-4xl md:text-5xl font-light tracking-tight text-white">
+                    {% if mode == "new" %}
+                        A new residence,<br><span class="italic text-champagne-200">at your service.</span>
+                    {% else %}
+                        Editing<br><span class="italic text-champagne-200">{{ property.title }}</span>
+                    {% endif %}
+                </h1>
+            </div>
+        </div>
+    </div>
+
+    <form method="post" enctype="multipart/form-data" class="glass-strong rounded-3xl p-8 md:p-10 space-y-10">
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+        <div class="glass border-l-4 border-rose-400 rounded-xl p-4 text-sm text-rose-100">
+            {{ form.non_field_errors }}
+        </div>
+        {% endif %}
+
+        {# ── Section 1 · Essentials ─────────────────────────── #}
+        <div>
+            <p class="eyebrow mb-6">1 · Essentials</p>
+
+            <div class="grid gap-6 md:grid-cols-2">
+                <div class="md:col-span-2">
+                    <label for="{{ form.title.id_for_label }}" class="form-label">Title</label>
+                    {{ form.title }}
+                    {% if form.title.errors %}<p class="form-error">{{ form.title.errors|join:", " }}</p>{% endif %}
+                </div>
+
+                <div class="md:col-span-2">
+                    <label for="{{ form.location.id_for_label }}" class="form-label">Location</label>
+                    {{ form.location }}
+                    {% if form.location.errors %}<p class="form-error">{{ form.location.errors|join:", " }}</p>{% endif %}
+                </div>
+
+                <div>
+                    <label for="{{ form.latitude.id_for_label }}" class="form-label">{{ form.latitude.label }}</label>
+                    {{ form.latitude }}
+                    {% if form.latitude.errors %}<p class="form-error">{{ form.latitude.errors|join:", " }}</p>{% endif %}
+                    <p class="mt-1 text-[0.65rem] uppercase tracking-widest text-white/40">Powers the map on the property detail page.</p>
+                </div>
+
+                <div>
+                    <label for="{{ form.longitude.id_for_label }}" class="form-label">{{ form.longitude.label }}</label>
+                    {{ form.longitude }}
+                    {% if form.longitude.errors %}<p class="form-error">{{ form.longitude.errors|join:", " }}</p>{% endif %}
+                    <p class="mt-1 text-[0.65rem] uppercase tracking-widest text-white/40">Optional — leave blank to hide the map.</p>
+                </div>
+
+                <div>
+                    <label for="{{ form.price.id_for_label }}" class="form-label">Price (₹ INR)</label>
+                    {{ form.price }}
+                    {% if form.price.errors %}<p class="form-error">{{ form.price.errors|join:", " }}</p>{% endif %}
+                    <p class="mt-1 text-[0.65rem] uppercase tracking-widest text-white/40">Enter the full rupee amount (e.g. 45000000 for ₹4.5 Cr)</p>
+                </div>
+
+                <div>
+                    <label for="{{ form.square_footage.id_for_label }}" class="form-label">Built-up area (sq. ft.)</label>
+                    {{ form.square_footage }}
+                    {% if form.square_footage.errors %}<p class="form-error">{{ form.square_footage.errors|join:", " }}</p>{% endif %}
+                </div>
+
+                <div>
+                    <label for="{{ form.bedrooms.id_for_label }}" class="form-label">Bedrooms</label>
+                    {{ form.bedrooms }}
+                    {% if form.bedrooms.errors %}<p class="form-error">{{ form.bedrooms.errors|join:", " }}</p>{% endif %}
+                </div>
+
+                <div>
+                    <label for="{{ form.bathrooms.id_for_label }}" class="form-label">Bathrooms</label>
+                    {{ form.bathrooms }}
+                    {% if form.bathrooms.errors %}<p class="form-error">{{ form.bathrooms.errors|join:", " }}</p>{% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="h-px bg-white/10"></div>
+
+        {# ── Section 2 · Description ────────────────────────── #}
+        <div>
+            <p class="eyebrow mb-6">2 · Description</p>
+            <label for="{{ form.description.id_for_label }}" class="form-label">Long description</label>
+            {{ form.description }}
+            {% if form.description.errors %}<p class="form-error">{{ form.description.errors|join:", " }}</p>{% endif %}
+            <p class="form-help">A few paragraphs describing the estate, its architecture, and its surroundings.</p>
+        </div>
+
+        <div class="h-px bg-white/10"></div>
+
+        {# ── Section 3 · Photography ───────────────────────── #}
+        <div>
+            <p class="eyebrow mb-6">3 · Photography</p>
+
+            <div class="grid gap-6 md:grid-cols-2">
+                <div>
+                    <label for="{{ form.primary_image.id_for_label }}" class="form-label">Primary image</label>
+                    {% if form.instance.primary_image %}
+                        <img src="{{ form.instance.primary_image.url }}" alt="Current primary" class="mb-3 h-40 w-full object-cover rounded-xl border border-white/10">
+                    {% endif %}
+                    {{ form.primary_image }}
+                    {% if form.primary_image.errors %}<p class="form-error">{{ form.primary_image.errors|join:", " }}</p>{% endif %}
+                    <p class="form-help">The hero shot shown on the homepage and listings grid.</p>
+                </div>
+
+                <div>
+                    <label for="{{ form.gallery_images.id_for_label }}" class="form-label">Gallery images</label>
+                    {{ form.gallery_images }}
+                    {% if form.gallery_images.errors %}<p class="form-error">{{ form.gallery_images.errors|join:", " }}</p>{% endif %}
+                    <p class="form-help">{{ form.gallery_images.help_text }}</p>
+                </div>
+            </div>
+
+            {% if mode == "edit" and property.gallery_images.exists %}
+            <div class="mt-8">
+                <p class="form-label mb-3">Existing gallery ({{ property.gallery_images.count }})</p>
+                <div class="grid grid-cols-3 md:grid-cols-6 gap-3">
+                    {% for img in property.gallery_images.all %}
+                    <div class="aspect-square rounded-lg overflow-hidden border border-white/10">
+                        <img src="{{ img.image.url }}" alt="{{ img.caption }}" class="h-full w-full object-cover">
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="h-px bg-white/10"></div>
+
+        {# ── Section 4 · Publication ───────────────────────── #}
+        <div>
+            <p class="eyebrow mb-6">4 · Publication</p>
+            <label class="flex items-start gap-3 cursor-pointer">
+                {{ form.is_published }}
+                <span>
+                    <span class="block text-white text-sm">{{ form.is_published.label }}</span>
+                    <span class="block text-xs text-white/40 mt-0.5">
+                        You can also save as a draft and publish later.
+                    </span>
+                </span>
+            </label>
+        </div>
+
+        {# ── Action bar ────────────────────────────────────── #}
+        <div class="flex flex-col-reverse md:flex-row items-center justify-between gap-4 pt-6 border-t border-white/10">
+            <a href="{% url 'portal:dashboard' %}" class="btn-ghost">Cancel</a>
+            <button type="submit" class="btn-primary md:min-w-[14rem]">
+                <span class="tracking-widest text-xs uppercase">
+                    {% if mode == "new" %}Publish Listing{% else %}Save Changes{% endif %}
+                </span>
+                <span aria-hidden="true">→</span>
+            </button>
+        </div>
+    </form>
+</section>
+{% endblock %}

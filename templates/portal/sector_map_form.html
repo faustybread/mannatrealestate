@@ -1,0 +1,88 @@
+{% extends "portal/base.html" %}
+
+{% block title %}{% if mode == "new" %}Upload Sector Map{% else %}Edit · {{ sector_map.name }}{% endif %} · Portal{% endblock %}
+
+{% block content %}
+<section class="mx-auto max-w-3xl px-6 py-10">
+
+    <div class="mb-10">
+        <a href="{% url 'portal:sector_map_list' %}" class="text-xs uppercase tracking-widest text-white/40 hover:text-white/70 transition">
+            ← Back to sector maps
+        </a>
+        <div class="mt-6">
+            <p class="eyebrow mb-3">{% if mode == "new" %}Upload a sector map{% else %}Edit sector map{% endif %}</p>
+            <h1 class="font-display text-4xl md:text-5xl font-light tracking-tight text-white">
+                {% if mode == "new" %}
+                    A new layout,<br><span class="italic text-champagne-200">for the gallery.</span>
+                {% else %}
+                    Editing<br><span class="italic text-champagne-200">{{ sector_map.name }}</span>
+                {% endif %}
+            </h1>
+        </div>
+    </div>
+
+    <form method="post" enctype="multipart/form-data" class="glass-strong rounded-3xl p-8 md:p-10 space-y-8">
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+        <div class="glass border-l-4 border-rose-400 rounded-xl p-4 text-sm text-rose-100">
+            {{ form.non_field_errors }}
+        </div>
+        {% endif %}
+
+        <div>
+            <label for="{{ form.name.id_for_label }}" class="form-label">Name</label>
+            {{ form.name }}
+            {% if form.name.errors %}<p class="form-error">{{ form.name.errors|join:", " }}</p>{% endif %}
+            <p class="form-help">Shown as the card title on /sitemaps/. Example: “Suncity Rohtak” or “Omaxe City”.</p>
+        </div>
+
+        <div>
+            <label for="{{ form.image.id_for_label }}" class="form-label">{{ form.image.label }}</label>
+            {% if form.instance.image %}
+                <img src="{{ form.instance.image.url }}" alt="Current sector map"
+                     class="mb-3 h-56 w-full object-contain rounded-xl border border-white/10 bg-midnight-900/40">
+            {% endif %}
+            {{ form.image }}
+            {% if form.image.errors %}<p class="form-error">{{ form.image.errors|join:", " }}</p>{% endif %}
+            <p class="form-help">High-resolution PNG or JPG. The public gallery lets buyers zoom in to read individual plot numbers.</p>
+        </div>
+
+        <div>
+            <label for="{{ form.description.id_for_label }}" class="form-label">Description</label>
+            {{ form.description }}
+            {% if form.description.errors %}<p class="form-error">{{ form.description.errors|join:", " }}</p>{% endif %}
+            <p class="form-help">Optional. A short line describing the developer, sector, or plot count.</p>
+        </div>
+
+        <div class="grid gap-6 md:grid-cols-2">
+            <div>
+                <label for="{{ form.order.id_for_label }}" class="form-label">{{ form.order.label }}</label>
+                {{ form.order }}
+                {% if form.order.errors %}<p class="form-error">{{ form.order.errors|join:", " }}</p>{% endif %}
+            </div>
+            <div class="flex items-end">
+                <label class="flex items-start gap-3 cursor-pointer">
+                    {{ form.is_published }}
+                    <span>
+                        <span class="block text-white text-sm">{{ form.is_published.label }}</span>
+                        <span class="block text-xs text-white/40 mt-0.5">
+                            Uncheck to hide this map while you finalise it.
+                        </span>
+                    </span>
+                </label>
+            </div>
+        </div>
+
+        <div class="flex flex-col-reverse md:flex-row items-center justify-between gap-4 pt-6 border-t border-white/10">
+            <a href="{% url 'portal:sector_map_list' %}" class="btn-ghost">Cancel</a>
+            <button type="submit" class="btn-primary md:min-w-[14rem]">
+                <span class="tracking-widest text-xs uppercase">
+                    {% if mode == "new" %}Upload Map{% else %}Save Changes{% endif %}
+                </span>
+                <span aria-hidden="true">→</span>
+            </button>
+        </div>
+    </form>
+</section>
+{% endblock %}

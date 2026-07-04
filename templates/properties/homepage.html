@@ -1,0 +1,490 @@
+{% extends "base.html" %}
+{% load static rupees %}
+
+{% block title %}MR Estates · Redefining Luxury Living in Rohtak{% endblock %}
+
+{% block content %}
+
+{# HERO — immersive full-viewport image + glassmorphic search #}
+<section class="relative isolate min-h-[100vh] flex items-end overflow-hidden">
+
+    <div class="absolute inset-0 -z-10 bg-midnight-900">
+        <video
+            autoplay muted loop playsinline
+            class="h-full w-full object-cover object-center opacity-0 transition-opacity duration-700"
+            id="hero-video"
+            preload="auto">
+            <source src="https://videos.pexels.com/video-files/3858852/3858852-hd_1920_1080_24fps.mp4" type="video/mp4">
+        </video>
+        <div class="absolute inset-0 bg-gradient-to-b from-midnight-900/60 via-midnight-900/20 to-midnight-900"></div>
+        <div class="absolute inset-0 bg-gradient-to-r from-midnight-900/55 via-transparent to-transparent"></div>
+    </div>
+
+    <div class="relative mx-auto max-w-7xl w-full px-4 sm:px-6 pb-12 sm:pb-16 md:pb-24 pt-32 sm:pt-36 md:pt-40">
+
+        <div class="max-w-3xl animate-fade-up">
+            <p class="eyebrow mb-4 sm:mb-6">
+                <span class="inline-block h-px w-8 align-middle bg-champagne-300/70 mr-3"></span>
+                MR Estates · Mannat Real Estate, Rohtak
+            </p>
+            <h1 class="font-display text-white text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-light leading-[1.05] md:leading-[1.02] tracking-tight">
+                Redefining luxury living<br>
+                <span class="italic font-extralight text-champagne-200">in Rohtak.</span>
+            </h1>
+            <p class="mt-6 sm:mt-8 max-w-xl text-base sm:text-lg text-white/70 leading-relaxed">
+                A hand-picked portfolio of villas, builder floors, plots, and modern flats
+                across Suncity Township, Omaxe City, and the finest sectors of Rohtak &mdash;
+                represented by a founder-led team you can trust.
+            </p>
+        </div>
+
+        <form action="{% url 'properties:list' %}" method="get"
+              class="glass-strong mt-10 sm:mt-14 rounded-2xl md:rounded-full p-3 md:p-2 md:pl-8
+                     grid grid-cols-1 md:flex md:flex-row items-stretch md:items-center gap-3 md:gap-0
+                     animate-fade-up [animation-delay:180ms]">
+
+            <div class="flex-1 flex flex-col md:justify-center px-4 md:px-0 md:py-2">
+                <label for="q-location" class="eyebrow text-[0.6rem] mb-1">Location</label>
+                <input id="q-location" name="location" type="text" placeholder="Sector 35, Suncity, Omaxe City…"
+                       class="glass-input">
+            </div>
+
+            <div class="search-divider"></div>
+
+            <div class="flex-1 flex flex-col md:justify-center px-4 md:px-6 md:py-2">
+                <label for="q-price" class="eyebrow text-[0.6rem] mb-1">Budget</label>
+                <select id="q-price" name="price"
+                        class="glass-input appearance-none pr-6 cursor-pointer">
+                    <option class="bg-midnight-800" value="">Any budget</option>
+                    <option class="bg-midnight-800" value="7500000">Up to ₹75 L</option>
+                    <option class="bg-midnight-800" value="15000000">₹75 L – ₹1.5 Cr</option>
+                    <option class="bg-midnight-800" value="30000000">₹1.5 Cr – ₹3 Cr</option>
+                    <option class="bg-midnight-800" value="50000000">₹3 Cr – ₹5 Cr</option>
+                    <option class="bg-midnight-800" value="100000000">₹5 Cr and above</option>
+                </select>
+            </div>
+
+            <div class="search-divider"></div>
+
+            <div class="flex-1 flex flex-col md:justify-center px-4 md:px-6 md:py-2">
+                <label for="q-type" class="eyebrow text-[0.6rem] mb-1">Property Type</label>
+                <select id="q-type" name="type"
+                        class="glass-input appearance-none pr-6 cursor-pointer">
+                    <option class="bg-midnight-800" value="">All properties</option>
+                    <option class="bg-midnight-800" value="villa">Luxury Villa</option>
+                    <option class="bg-midnight-800" value="builder floor">Builder Floor</option>
+                    <option class="bg-midnight-800" value="flat">Flat / Apartment</option>
+                    <option class="bg-midnight-800" value="plot">Plot</option>
+                </select>
+            </div>
+
+            <button type="submit"
+                    class="btn-primary md:mr-1 md:ml-4 md:py-4 md:px-8 shrink-0"
+                    aria-label="Search estates">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>
+                </svg>
+                <span class="tracking-widest text-xs uppercase">Explore</span>
+            </button>
+        </form>
+
+        <div class="hidden md:flex items-center gap-3 mt-16 text-white/40 text-xs tracking-widest uppercase">
+            <span class="h-px w-10 bg-white/30"></span>
+            Scroll to view featured Rohtak properties
+        </div>
+    </div>
+</section>
+
+
+{# ═══════════════════════════════════════════════════════════════ #}
+{#  ABOUT THE AGENCY — Trust + Credentials + Office Gallery       #}
+{# ═══════════════════════════════════════════════════════════════ #}
+<section id="about-agency" class="relative py-20 sm:py-28 md:py-36 overflow-hidden">
+
+    {# Soft radial glow behind the section #}
+    <div class="pointer-events-none absolute inset-0 -z-10">
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[600px] w-[900px] rounded-full
+                    bg-champagne-400/[0.04] blur-[120px]"></div>
+    </div>
+
+    <div class="mx-auto max-w-7xl px-4 sm:px-6">
+
+        {# ── Section header ──────────────────────────────── #}
+        <div class="max-w-2xl mb-14 sm:mb-20 reveal reveal-up">
+            <p class="eyebrow mb-4">
+                <span class="inline-block h-px w-8 align-middle bg-champagne-300/70 mr-3"></span>
+                Trusted Since 2007 · RERA Registered
+            </p>
+            <h2 class="font-display text-3xl sm:text-4xl md:text-6xl font-light tracking-tight text-white leading-[1.08]">
+                About the Agency —<br>
+                <span class="italic font-extralight text-champagne-200">17+ Years in Rohtak.</span>
+            </h2>
+            <p class="mt-5 text-base sm:text-lg text-white/60 leading-relaxed">
+                MR Estates (Mannat Real Estate) is Rohtak's founder-led luxury property firm.
+                Every transaction is personally overseen — no third-party brokers, no hidden fees.
+            </p>
+        </div>
+
+        {# ── Two-column: trust cards + gallery ─────────── #}
+        <div class="grid gap-8 lg:gap-12 grid-cols-1 lg:grid-cols-2 items-start">
+
+            {# Left — trust pillars #}
+            <div class="space-y-5 reveal reveal-left" data-delay="100">
+
+                {# Physical office card #}
+                <div class="glass-strong rounded-3xl p-7 sm:p-8 flex gap-5">
+                    <div class="h-12 w-12 shrink-0 rounded-2xl bg-champagne-400/15 border border-champagne-300/20
+                                flex items-center justify-center mt-0.5">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-champagne-300" viewBox="0 0 24 24"
+                             fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                            <polyline points="9 22 9 12 15 12 15 22"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="eyebrow text-[0.6rem] mb-2">Physical Office</p>
+                        <p class="font-display text-white text-lg leading-snug tracking-tight">
+                            SCO 75, Suncity Business Center
+                        </p>
+                        <p class="mt-1.5 text-sm text-white/60 leading-relaxed">
+                            Sector-35, Rohtak, Haryana &ndash; 124001<br>
+                            Mon &ndash; Sat · 10:00 &ndash; 19:00 IST
+                        </p>
+                        <a href="https://www.google.com/maps/search/SCO+75+Suncity+Business+Center+Sector+35+Rohtak"
+                           target="_blank" rel="noopener"
+                           class="inline-flex items-center gap-1.5 mt-3 text-xs uppercase tracking-widest text-champagne-300 hover:text-champagne-200 transition">
+                            Get directions <span aria-hidden="true">↗</span>
+                        </a>
+                    </div>
+                </div>
+
+                {# 17+ years expertise #}
+                <div class="glass rounded-3xl p-7 sm:p-8 flex gap-5">
+                    <div class="h-12 w-12 shrink-0 rounded-2xl bg-champagne-400/15 border border-champagne-300/20
+                                flex items-center justify-center mt-0.5">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-champagne-300" viewBox="0 0 24 24"
+                             fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                            <circle cx="12" cy="12" r="10"/>
+                            <polyline points="12 6 12 12 16 14"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="eyebrow text-[0.6rem] mb-2">Local Market Expertise</p>
+                        <p class="font-display text-white text-lg leading-snug tracking-tight">
+                            17+ Years in Rohtak Real Estate
+                        </p>
+                        <p class="mt-1.5 text-sm text-white/60 leading-relaxed">
+                            Deep knowledge of Suncity Township, Omaxe City, HUDA Sectors,
+                            and Rohtak's evolving residential and commercial landscape.
+                        </p>
+                    </div>
+                </div>
+
+                {# RERA trust badge — bold & elegant #}
+                <div class="glass-strong rounded-3xl p-7 sm:p-8 border border-champagne-300/25
+                            relative overflow-hidden">
+                    {# Subtle inner glow #}
+                    <div class="pointer-events-none absolute inset-0 rounded-3xl"
+                         style="background: radial-gradient(ellipse at top right, rgba(224,198,117,0.07) 0%, transparent 70%);"></div>
+
+                    <div class="flex items-start gap-5 relative">
+                        <div class="h-12 w-12 shrink-0 rounded-2xl bg-gradient-to-br from-champagne-300/30 to-champagne-500/20
+                                    border border-champagne-300/40 flex items-center justify-center mt-0.5
+                                    shadow-[0_0_20px_rgba(224,198,117,0.15)]">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-champagne-200" viewBox="0 0 24 24"
+                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                                <path d="m9 12 2 2 4-4"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="flex flex-wrap items-center gap-2 mb-2">
+                                <p class="eyebrow text-[0.6rem]">RERA Registered</p>
+                                <span class="inline-block rounded-full bg-champagne-400/20 border border-champagne-300/40
+                                             px-2.5 py-0.5 text-[0.55rem] uppercase tracking-widest text-champagne-200 font-medium">
+                                    Verified
+                                </span>
+                            </div>
+                            <p class="font-display text-white text-lg leading-snug tracking-tight">
+                                Haryana Real Estate Regulatory Authority
+                            </p>
+                            <p class="mt-1.5 text-sm text-white/60 leading-relaxed">
+                                Registered with RERA, Panchkula — ensuring every listing
+                                is legally compliant, transparent, and client-protected.
+                            </p>
+                            <p class="mt-2.5 text-xs text-champagne-300/70 uppercase tracking-widest font-medium">
+                                Haryana RERA · Panchkula
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            {# Right — glassmorphic office gallery grid #}
+            <div class="reveal reveal-right" data-delay="200">
+                <div class="grid grid-cols-2 gap-3 sm:gap-4">
+
+                    {# Large top — main hall #}
+                    <div class="col-span-2 glass rounded-3xl overflow-hidden aspect-[16/9]">
+                        <img
+                            src="/media/office/3_rk_-for-rent-model_town_rohtak-Rohtak-hall.jpg.avif"
+                            alt="MR Estates office — reception hall, Suncity Business Center"
+                            class="h-full w-full object-cover object-center transition duration-700 hover:scale-105">
+                    </div>
+
+                    {# Bottom-left — room interior #}
+                    <div class="glass rounded-2xl overflow-hidden aspect-square">
+                        <img
+                            src="/media/office/3_rk_-for-rent-model_town_rohtak-Rohtak-bedroom.jpg.avif"
+                            alt="MR Estates office interior"
+                            class="h-full w-full object-cover transition duration-700 hover:scale-105">
+                    </div>
+
+                    {# Bottom-right: stacked #}
+                    <div class="flex flex-col gap-3 sm:gap-4">
+                        <div class="glass rounded-2xl overflow-hidden flex-1">
+                            <img
+                                src="/media/office/3_rk_-for-rent-model_town_rohtak-Rohtak-others.jpg.avif"
+                                alt="MR Estates office space"
+                                class="h-full w-full object-cover transition duration-700 hover:scale-105">
+                        </div>
+                        <div class="glass rounded-2xl overflow-hidden flex-1">
+                            <img
+                                src="/media/office/3_rk_-for-rent-model_town_rohtak-Rohtak-hall.jpg.avif"
+                                alt="MR Estates office — SCO 75, Sector-35, Rohtak"
+                                class="h-full w-full object-cover object-bottom transition duration-700 hover:scale-105">
+                        </div>
+                    </div>
+
+                </div>
+
+                {# Gallery caption strip #}
+                <div class="mt-4 flex items-center gap-3 text-white/30 text-[0.65rem] uppercase tracking-widest">
+                    <span class="h-px w-6 bg-champagne-300/40 shrink-0"></span>
+                    SCO 75, Suncity Business Center · Sector-35, Rohtak
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+
+{# FEATURED GRID — 6 glass cards from `featured_properties` #}
+<section id="featured" class="relative py-20 sm:py-28 md:py-40">
+
+    <div class="mx-auto max-w-7xl px-4 sm:px-6">
+
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10 md:mb-16">
+            <div class="reveal reveal-up">
+                <p class="eyebrow mb-3 sm:mb-4">
+                    <span class="inline-block h-px w-8 align-middle bg-champagne-300/70 mr-3"></span>
+                    Featured in Rohtak
+                </p>
+                <h2 class="font-display text-3xl sm:text-4xl md:text-6xl font-light tracking-tight text-white max-w-2xl">
+                    Handpicked properties,<br>
+                    <span class="italic text-champagne-200 font-extralight">across the city.</span>
+                </h2>
+            </div>
+            <a href="{% url 'properties:list' %}"
+               class="self-start md:self-auto btn-ghost text-xs uppercase tracking-widest reveal reveal-up" data-delay="120">
+                View entire portfolio <span aria-hidden="true">→</span>
+            </a>
+        </div>
+
+        {% if featured_properties %}
+        <div class="grid gap-6 sm:gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+            {% for property in featured_properties %}
+            <a href="{{ property.get_absolute_url }}"
+               class="group glass glass-hover rounded-3xl overflow-hidden flex flex-col reveal reveal-up"
+               data-delay="{{ forloop.counter0|add:1 }}00">
+
+                <div class="relative aspect-[4/5] overflow-hidden">
+                    {% if property.primary_image %}
+                        <img src="{{ property.primary_image.url }}"
+                             alt="{{ property.title }}"
+                             class="h-full w-full object-cover transition duration-[1200ms] ease-out group-hover:scale-105"
+                             loading="lazy">
+                    {% else %}
+                        <div class="h-full w-full bg-gradient-to-br from-midnight-600 to-midnight-800"></div>
+                    {% endif %}
+                    <div class="absolute inset-0 bg-gradient-to-t from-midnight-900/80 via-midnight-900/10 to-transparent"></div>
+
+                    <div class="absolute top-4 left-4 glass rounded-full px-3 py-1.5">
+                        <span class="text-[0.65rem] uppercase tracking-widest text-white/90">{{ property.location }}</span>
+                    </div>
+
+                    <div class="absolute bottom-4 left-5 right-5 flex items-end justify-between gap-3">
+                        <span class="eyebrow">For Sale</span>
+                        <span class="font-display text-white text-lg tracking-wide whitespace-nowrap">
+                            {{ property.price|inr }}
+                        </span>
+                    </div>
+                </div>
+
+                <div class="p-6 flex-1 flex flex-col">
+                    <h3 class="font-display text-xl text-white tracking-tight leading-snug line-clamp-2">
+                        {{ property.title }}
+                    </h3>
+                    <p class="mt-3 text-sm text-white/60 leading-relaxed line-clamp-2">
+                        {{ property.description|truncatewords:22 }}
+                    </p>
+
+                    <div class="mt-6 pt-5 border-t border-white/10 flex items-center justify-between text-xs uppercase tracking-widest text-white/50">
+                        <span>{{ property.bedrooms }} BHK</span>
+                        <span class="h-1 w-1 rounded-full bg-white/20"></span>
+                        <span>{{ property.bathrooms }} Bath</span>
+                        <span class="h-1 w-1 rounded-full bg-white/20"></span>
+                        <span>{{ property.square_footage|floatformat:0 }} sq. ft.</span>
+                    </div>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="glass rounded-3xl p-16 text-center">
+            <p class="eyebrow mb-4">Preview Mode</p>
+            <h3 class="font-display text-3xl font-light text-white">
+                Our next selection is being curated.
+            </h3>
+            <p class="mt-4 max-w-lg mx-auto text-white/60">
+                Published listings will appear here. Add and publish properties from the
+                <a href="/admin/" class="underline decoration-champagne-300/60 underline-offset-4 hover:text-champagne-200">admin</a>
+                to preview the featured grid.
+            </p>
+        </div>
+        {% endif %}
+
+    </div>
+</section>
+
+
+{# ═══════════════════════════════════════════════════════════════ #}
+{#  SITE VISIT SCHEDULER — frictionless 3-field form              #}
+{# ═══════════════════════════════════════════════════════════════ #}
+<section id="schedule-visit" class="relative py-20 sm:py-28">
+
+    <div class="pointer-events-none absolute inset-0 -z-10">
+        <div class="absolute bottom-0 left-1/2 -translate-x-1/2 h-[400px] w-[700px] rounded-full
+                    bg-champagne-400/[0.05] blur-[100px]"></div>
+    </div>
+
+    <div class="mx-auto max-w-7xl px-4 sm:px-6">
+        <div class="glass-strong rounded-3xl md:rounded-[2rem] overflow-hidden reveal reveal-up">
+            <div class="grid grid-cols-1 lg:grid-cols-2">
+
+                {# Left: copy + contact details #}
+                <div class="p-8 sm:p-10 md:p-14 border-b border-white/10 lg:border-b-0 lg:border-r">
+                    <p class="eyebrow mb-4">
+                        <span class="inline-block h-px w-8 align-middle bg-champagne-300/70 mr-3"></span>
+                        No Brokers · Direct Access
+                    </p>
+                    <h2 class="font-display text-3xl sm:text-4xl md:text-5xl font-light tracking-tight text-white leading-[1.1]">
+                        Schedule a<br>
+                        <span class="italic font-extralight text-champagne-200">Direct Site Visit.</span>
+                    </h2>
+                    <p class="mt-5 text-sm sm:text-base text-white/60 leading-relaxed max-w-sm">
+                        Tell us your name, number, and preferred location.
+                        Our team will reach out within a few hours to confirm your visit.
+                    </p>
+
+                    <div class="mt-10 space-y-4">
+                        <a href="tel:+911262000000"
+                           class="flex items-center gap-3 text-white/70 hover:text-white transition group">
+                            <span class="h-9 w-9 rounded-full glass flex items-center justify-center shrink-0
+                                         group-hover:bg-white/10 transition">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-champagne-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.6 1.22h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 8.8a16 16 0 0 0 6.29 6.29l.95-.95a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                            </span>
+                            <span class="text-sm">+91 12620 00000</span>
+                        </a>
+                        <a href="https://wa.me/911262000000?text=Hi%20MR%20Estates%2C%20I%20am%20looking%20to%20schedule%20a%20physical%20site%20visit%20or%20inquire%20about%20available%20listings%20in%20Rohtak."
+                           target="_blank" rel="noopener"
+                           class="flex items-center gap-3 text-white/70 hover:text-white transition group">
+                            <span class="h-9 w-9 rounded-full glass flex items-center justify-center shrink-0
+                                         group-hover:bg-white/10 transition">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-[#25D366]" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg>
+                            </span>
+                            <span class="text-sm">WhatsApp us directly</span>
+                        </a>
+                        <div class="flex items-center gap-3 text-white/40">
+                            <span class="h-9 w-9 rounded-full glass flex items-center justify-center shrink-0">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-champagne-300/60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                            </span>
+                            <span class="text-sm leading-snug">
+                                SCO 75, Suncity Business Center,<br>
+                                Sector-35, Rohtak, Haryana
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                {# Right: 3-field AJAX form #}
+                <div class="p-8 sm:p-10 md:p-14">
+                    <p class="eyebrow text-[0.6rem] mb-6">Fill in · 30 seconds</p>
+
+                    <form class="site-visit-form space-y-5"
+                          data-submit-url="{% url 'portal:submit_site_visit' %}"
+                          novalidate>
+                        {% csrf_token %}
+
+                        <div>
+                            <label for="sv-name-hp" class="form-label">Your Name</label>
+                            <input id="sv-name-hp" name="name" type="text" required
+                                   class="form-input" placeholder="Full name">
+                        </div>
+
+                        <div>
+                            <label for="sv-phone-hp" class="form-label">WhatsApp / Phone</label>
+                            <input id="sv-phone-hp" name="phone" type="tel" required
+                                   class="form-input" placeholder="+91 98765 43210">
+                        </div>
+
+                        <div>
+                            <label for="sv-location-hp" class="form-label">Preferred Location</label>
+                            <select id="sv-location-hp" name="preferred_location" required
+                                    class="form-input appearance-none cursor-pointer">
+                                <option class="bg-midnight-800" value="" disabled selected>Select an area…</option>
+                                <option class="bg-midnight-800" value="Suncity Township">Suncity Township</option>
+                                <option class="bg-midnight-800" value="Omaxe City">Omaxe City</option>
+                                <option class="bg-midnight-800" value="HUDA Sectors">HUDA Sectors</option>
+                                <option class="bg-midnight-800" value="Sector 35">Sector 35</option>
+                                <option class="bg-midnight-800" value="Sector 14">Sector 14</option>
+                                <option class="bg-midnight-800" value="Sector 4">Sector 4</option>
+                                <option class="bg-midnight-800" value="Open to suggestions">Open to Suggestions</option>
+                            </select>
+                        </div>
+
+                        <button type="submit"
+                                class="btn-cta w-full mt-2 sv-submit-btn text-sm">
+                            <span class="tracking-widest text-xs uppercase sv-btn-label">Schedule Site Visit</span>
+                            <span aria-hidden="true" class="sv-btn-arrow">→</span>
+                        </button>
+
+                        <p class="sv-feedback text-center text-sm mt-3 hidden"></p>
+
+                        <p class="text-center text-[0.65rem] uppercase tracking-widest text-white/30 pt-1">
+                            We respond within a few hours · No spam, ever.
+                        </p>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
+
+{% block extra_body %}
+<script>
+(function () {
+    var v = document.getElementById('hero-video');
+    if (!v) return;
+    function reveal() { v.style.opacity = '1'; }
+    if (v.readyState >= 3) { reveal(); }
+    else { v.addEventListener('canplay', reveal, {once: true}); }
+})();
+</script>
+{% endblock %}

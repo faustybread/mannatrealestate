@@ -1,0 +1,382 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Sector Maps · MR Estates Rohtak{% endblock %}
+{% block meta_description %}Official layout maps for Suncity Rohtak, Omaxe City and other townships across Rohtak — zoom in to read plot numbers.{% endblock %}
+
+
+{% block content %}
+
+{# HEADER #}
+<section class="pt-32 sm:pt-36 md:pt-40 pb-12 md:pb-16 relative">
+    <div aria-hidden="true" class="absolute -top-10 left-1/2 -translate-x-1/2 h-[24rem] sm:h-[28rem] w-full max-w-[42rem] rounded-full bg-champagne-500/[0.08] blur-[140px]"></div>
+
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 relative">
+        <p class="eyebrow mb-4 sm:mb-6">
+            <span class="inline-block h-px w-8 align-middle bg-champagne-300/70 mr-3"></span>
+            Sector Mappings
+        </p>
+        <h1 class="font-display text-4xl sm:text-5xl md:text-7xl font-light leading-[1.05] md:leading-[1.02] tracking-tight text-white max-w-4xl animate-fade-up">
+            The official layouts,<br>
+            <span class="italic text-champagne-200 font-extralight">plot by plot.</span>
+        </h1>
+        <p class="mt-4 sm:mt-6 max-w-2xl text-sm sm:text-base text-white/60 leading-relaxed animate-fade-up [animation-delay:120ms]">
+            Browse the sanctioned layout maps for Rohtak&rsquo;s premier townships. Tap any map to open the lightbox &mdash; then pinch or scroll to zoom in and read individual plot numbers, sector roads, and internal blocks.
+        </p>
+    </div>
+</section>
+
+
+{# GALLERY GRID #}
+<section class="pb-24 md:pb-32">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6">
+
+        {# ── Curated maps from verified sources ──────────────── #}
+        {% if curated_maps %}
+        <div class="mb-6 flex items-center gap-4">
+            <div>
+                <p class="eyebrow mb-1">
+                    <span class="inline-block h-px w-6 align-middle bg-champagne-300/70 mr-2"></span>
+                    Official layouts — verified sources
+                </p>
+            </div>
+        </div>
+        <div class="grid gap-6 sm:gap-8 grid-cols-1 md:grid-cols-2">
+            {% for cmap in curated_maps %}
+            <article class="glass-strong glass-hover rounded-3xl overflow-hidden flex flex-col reveal reveal-up"
+                     data-delay="{{ forloop.counter0 }}100">
+
+                <button type="button"
+                        class="group relative block w-full aspect-[4/3] overflow-hidden focus:outline-none focus-visible:ring-2 focus-visible:ring-champagne-300/70"
+                        data-lightbox-open
+                        data-lightbox-src="{{ cmap.image_url }}"
+                        data-lightbox-title="{{ cmap.name }}"
+                        data-lightbox-caption="{{ cmap.description }}"
+                        aria-label="Open {{ cmap.name }} layout in lightbox">
+
+                    <img src="{{ cmap.image_url }}"
+                         alt="{{ cmap.name }} sector map"
+                         class="h-full w-full object-cover object-top transition duration-[1200ms] ease-out group-hover:scale-105"
+                         loading="lazy"
+                         onerror="this.closest('button').style.display='none';this.closest('button').nextElementSibling&&(this.closest('button').nextElementSibling.style.display='flex')">
+
+                    <div class="absolute inset-0 bg-gradient-to-t from-midnight-900/80 via-midnight-900/20 to-midnight-900/10 group-hover:from-midnight-900/60 transition"></div>
+
+                    <span class="absolute top-4 left-4 glass rounded-full px-3 py-1.5 text-[0.65rem] uppercase tracking-widest text-champagne-200">
+                        {{ cmap.tag }}
+                    </span>
+                    <span class="absolute top-4 right-4 glass rounded-full px-3 py-1.5 text-[0.6rem] uppercase tracking-widest text-white/60">
+                        {{ cmap.developer }}
+                    </span>
+
+                    <span class="absolute bottom-4 right-4 glass-strong rounded-full px-4 py-2 flex items-center gap-2 text-white text-xs uppercase tracking-widest">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/><path d="M11 8v6M8 11h6"/></svg>
+                        Zoom in
+                    </span>
+                </button>
+
+                {# Fallback placeholder (shown when image fails to load) #}
+                <div class="relative aspect-[4/3] bg-gradient-to-br from-midnight-700 to-midnight-900 items-center justify-center hidden">
+                    <div class="text-center px-6">
+                        <div class="mx-auto h-14 w-14 rounded-full glass flex items-center justify-center mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-champagne-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round">
+                                <path d="M9 3 3 6v15l6-3 6 3 6-3V3l-6 3z"/><path d="M9 3v15M15 6v15"/>
+                            </svg>
+                        </div>
+                        <p class="text-white/80 font-display text-lg">{{ cmap.name }}</p>
+                        <p class="text-white/40 text-xs mt-2">Map loading — tap to expand</p>
+                    </div>
+                </div>
+
+                <div class="p-8 flex-1 flex flex-col">
+                    <h2 class="font-display text-2xl md:text-3xl text-white font-light tracking-tight">{{ cmap.name }}</h2>
+                    <p class="mt-3 text-sm text-white/60 leading-relaxed">{{ cmap.description }}</p>
+                    <div class="mt-6 pt-5 border-t border-white/10 flex items-center justify-between">
+                        <span class="text-[0.65rem] uppercase tracking-widest text-white/30">
+                            {{ cmap.developer }}
+                        </span>
+                        <button type="button"
+                                data-lightbox-open
+                                data-lightbox-src="{{ cmap.image_url }}"
+                                data-lightbox-title="{{ cmap.name }}"
+                                data-lightbox-caption="{{ cmap.description }}"
+                                class="text-xs uppercase tracking-widest text-champagne-300 hover:text-champagne-200 transition inline-flex items-center gap-1">
+                            Open full map <span aria-hidden="true">→</span>
+                        </button>
+                    </div>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {# ── Maps uploaded via the portal (admin-managed) ──── #}
+        {% if sector_maps %}
+        {% if curated_maps %}
+        <div class="mt-14 mb-6 flex items-center gap-4">
+            <div>
+                <p class="eyebrow mb-1">
+                    <span class="inline-block h-px w-6 align-middle bg-champagne-300/70 mr-2"></span>
+                    Additional maps — uploaded by MR Estates
+                </p>
+            </div>
+        </div>
+        {% endif %}
+        <div class="grid gap-6 sm:gap-8 grid-cols-1 md:grid-cols-2">
+            {% for smap in sector_maps %}
+            <article class="glass-strong glass-hover rounded-3xl overflow-hidden flex flex-col reveal reveal-up"
+                     data-delay="{{ forloop.counter0 }}100">
+
+                {% if smap.image %}
+                <button type="button"
+                        class="group relative block w-full aspect-[4/3] overflow-hidden focus:outline-none focus-visible:ring-2 focus-visible:ring-champagne-300/70"
+                        data-lightbox-open
+                        data-lightbox-src="{{ smap.image.url }}"
+                        data-lightbox-title="{{ smap.name }}"
+                        data-lightbox-caption="{{ smap.description|default:'' }}"
+                        aria-label="Open {{ smap.name }} layout in lightbox">
+
+                    <img src="{{ smap.image.url }}" alt="{{ smap.name }} layout map"
+                         class="h-full w-full object-cover object-center transition duration-[1200ms] ease-out group-hover:scale-105"
+                         loading="lazy">
+                    <div class="absolute inset-0 bg-gradient-to-t from-midnight-900/70 via-midnight-900/10 to-midnight-900/30 group-hover:from-midnight-900/50 transition"></div>
+                    <span class="absolute top-4 left-4 glass rounded-full px-3 py-1.5 text-[0.65rem] uppercase tracking-widest text-white/90">Official layout</span>
+                    <span class="absolute bottom-4 right-4 glass-strong rounded-full px-4 py-2 flex items-center gap-2 text-white text-xs uppercase tracking-widest">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/><path d="M11 8v6M8 11h6"/></svg>
+                        Zoom in
+                    </span>
+                </button>
+                {% else %}
+                <div class="relative aspect-[4/3] bg-gradient-to-br from-midnight-700 to-midnight-900 flex items-center justify-center">
+                    <div class="text-center px-6">
+                        <div class="mx-auto h-14 w-14 rounded-full glass flex items-center justify-center mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-champagne-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round">
+                                <path d="M9 3 3 6v15l6-3 6 3 6-3V3l-6 3z"/><path d="M9 3v15M15 6v15"/>
+                            </svg>
+                        </div>
+                        <p class="text-white/80 font-display text-lg">Layout coming soon</p>
+                        <p class="text-white/40 text-xs mt-2">MR Estates team will upload shortly.</p>
+                    </div>
+                </div>
+                {% endif %}
+
+                <div class="p-8 flex-1 flex flex-col">
+                    <h2 class="font-display text-2xl md:text-3xl text-white font-light tracking-tight">{{ smap.name }}</h2>
+                    {% if smap.description %}<p class="mt-3 text-sm text-white/60 leading-relaxed">{{ smap.description }}</p>{% endif %}
+                    {% if smap.image %}
+                    <div class="mt-6 pt-5 border-t border-white/10 flex items-center justify-between">
+                        <span class="text-[0.65rem] uppercase tracking-widest text-white/40">Updated {{ smap.updated_at|date:"M j, Y" }}</span>
+                        <button type="button"
+                                data-lightbox-open data-lightbox-src="{{ smap.image.url }}"
+                                data-lightbox-title="{{ smap.name }}" data-lightbox-caption="{{ smap.description|default:'' }}"
+                                class="text-xs uppercase tracking-widest text-champagne-300 hover:text-champagne-200 transition inline-flex items-center gap-1">
+                            Open full map <span aria-hidden="true">→</span>
+                        </button>
+                    </div>
+                    {% endif %}
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% if not sector_maps and not curated_maps %}
+        <div class="glass-strong rounded-3xl p-20 text-center max-w-3xl mx-auto">
+            <p class="eyebrow mb-4">No maps yet</p>
+            <h3 class="font-display text-3xl font-light text-white">Layouts coming soon.</h3>
+            <p class="mt-4 max-w-md mx-auto text-white/60">The MR Estates team is preparing the official sector maps.</p>
+        </div>
+        {% endif %}
+
+        {# Helpful hint #}
+        {% if sector_maps or curated_maps %}
+        <p class="mt-10 text-center text-xs uppercase tracking-widest text-white/40">
+            <span class="inline-block h-px w-8 align-middle bg-white/30 mr-3"></span>
+            Scroll or pinch inside the lightbox to zoom · Drag to pan · Press
+            <kbd class="mx-1 px-1.5 py-0.5 rounded bg-white/10 border border-white/15 text-white/70 text-[0.65rem]">Esc</kbd>
+            to close
+        </p>
+        {% endif %}
+
+    </div>
+</section>
+
+
+{# ══════════════════════════════════════════════════════════════════
+   LIGHTBOX — fullscreen glass overlay with zoom + pan
+   ────────────────────────────────────────────────────────────── #}
+<div id="lightbox" class="fixed inset-0 z-[60] hidden items-center justify-center" role="dialog" aria-modal="true" aria-labelledby="lightbox-title">
+
+    {# Backdrop — click closes. #}
+    <div class="absolute inset-0 bg-midnight-900/85 backdrop-blur-lg" data-lightbox-close></div>
+
+    {# Chrome — title, close button #}
+    <div class="absolute top-0 inset-x-0 z-10 p-6 flex items-start justify-between gap-4 pointer-events-none">
+        <div class="glass-strong rounded-2xl px-5 py-3 pointer-events-auto max-w-lg">
+            <p class="eyebrow text-[0.55rem] text-champagne-200 mb-1">Official layout</p>
+            <p id="lightbox-title" class="font-display text-white text-lg tracking-tight"></p>
+            <p id="lightbox-caption" class="text-white/60 text-xs mt-1 leading-relaxed hidden"></p>
+        </div>
+
+        <button type="button"
+                data-lightbox-close
+                class="glass-strong h-11 w-11 rounded-full flex items-center justify-center text-white/80 hover:text-white hover:bg-white/[0.12] transition pointer-events-auto"
+                aria-label="Close">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+    </div>
+
+    {# Zoom controls #}
+    <div class="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 glass-strong rounded-full px-3 py-2 flex items-center gap-2 pointer-events-auto">
+        <button type="button" data-lightbox-zoom-out
+                class="h-9 w-9 rounded-full flex items-center justify-center text-white/80 hover:text-white hover:bg-white/[0.08] transition"
+                aria-label="Zoom out">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14"/></svg>
+        </button>
+        <span id="lightbox-zoom-label" class="text-white/70 text-xs uppercase tracking-widest px-2 min-w-[3.5rem] text-center tabular-nums">100%</span>
+        <button type="button" data-lightbox-zoom-in
+                class="h-9 w-9 rounded-full flex items-center justify-center text-white/80 hover:text-white hover:bg-white/[0.08] transition"
+                aria-label="Zoom in">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+        </button>
+        <span class="h-6 w-px bg-white/15 mx-1"></span>
+        <button type="button" data-lightbox-reset
+                class="h-9 px-3 rounded-full text-white/80 hover:text-white hover:bg-white/[0.08] transition text-xs uppercase tracking-widest"
+                aria-label="Reset zoom">
+            Reset
+        </button>
+    </div>
+
+    {# Scrollable viewport for the map — the image itself is transformed via JS #}
+    <div id="lightbox-viewport"
+         class="relative w-full h-full flex items-center justify-center overflow-hidden select-none cursor-grab"
+         data-lightbox-viewport>
+        <img id="lightbox-image" src="" alt=""
+             class="max-w-[92vw] max-h-[86vh] object-contain will-change-transform transition-transform duration-100 ease-out"
+             draggable="false">
+    </div>
+</div>
+{% endblock %}
+
+
+{% block extra_body %}
+<script>
+(function () {
+    const lightbox   = document.getElementById('lightbox');
+    if (!lightbox) return;
+
+    const image      = document.getElementById('lightbox-image');
+    const titleEl    = document.getElementById('lightbox-title');
+    const captionEl  = document.getElementById('lightbox-caption');
+    const zoomLabel  = document.getElementById('lightbox-zoom-label');
+    const viewport   = document.getElementById('lightbox-viewport');
+
+    // Zoom + pan state, reset on every open.
+    let scale = 1, tx = 0, ty = 0;
+    const MIN = 1, MAX = 5, STEP = 0.35;
+
+    const apply = () => {
+        image.style.transform = `translate(${tx}px, ${ty}px) scale(${scale})`;
+        zoomLabel.textContent = Math.round(scale * 100) + '%';
+    };
+    const reset = () => { scale = 1; tx = 0; ty = 0; apply(); };
+    const clamp = v => Math.max(MIN, Math.min(MAX, v));
+
+    // Open ----------------------------------------------------------
+    document.querySelectorAll('[data-lightbox-open]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const src = btn.dataset.lightboxSrc;
+            if (!src) return;
+            image.src            = src;
+            image.alt            = btn.dataset.lightboxTitle || '';
+            titleEl.textContent  = btn.dataset.lightboxTitle || '';
+            const cap = (btn.dataset.lightboxCaption || '').trim();
+            captionEl.textContent = cap;
+            captionEl.classList.toggle('hidden', !cap);
+
+            reset();
+            lightbox.classList.remove('hidden');
+            lightbox.classList.add('flex');
+            document.body.style.overflow = 'hidden';
+        });
+    });
+
+    // Close ---------------------------------------------------------
+    const close = () => {
+        lightbox.classList.add('hidden');
+        lightbox.classList.remove('flex');
+        document.body.style.overflow = '';
+        image.src = '';
+    };
+    document.querySelectorAll('[data-lightbox-close]').forEach(el =>
+        el.addEventListener('click', close)
+    );
+    document.addEventListener('keydown', (e) => {
+        if (lightbox.classList.contains('hidden')) return;
+        if (e.key === 'Escape') close();
+        else if (e.key === '+' || e.key === '=') { scale = clamp(scale + STEP); apply(); }
+        else if (e.key === '-' || e.key === '_') { scale = clamp(scale - STEP); apply(); }
+        else if (e.key === '0') reset();
+    });
+
+    // Zoom buttons --------------------------------------------------
+    document.querySelector('[data-lightbox-zoom-in]')?.addEventListener('click', () => { scale = clamp(scale + STEP); apply(); });
+    document.querySelector('[data-lightbox-zoom-out]')?.addEventListener('click', () => { scale = clamp(scale - STEP); apply(); if (scale === 1) { tx = 0; ty = 0; apply(); } });
+    document.querySelector('[data-lightbox-reset]')?.addEventListener('click', reset);
+
+    // Wheel zoom (centred on cursor) --------------------------------
+    viewport.addEventListener('wheel', (e) => {
+        if (lightbox.classList.contains('hidden')) return;
+        e.preventDefault();
+        const delta = -Math.sign(e.deltaY) * STEP;
+        const prev  = scale;
+        scale = clamp(scale + delta);
+        // Zoom about the cursor so panning feels natural.
+        if (scale !== prev) {
+            const rect = viewport.getBoundingClientRect();
+            const cx = e.clientX - rect.left - rect.width  / 2;
+            const cy = e.clientY - rect.top  - rect.height / 2;
+            const ratio = scale / prev;
+            tx = cx - (cx - tx) * ratio;
+            ty = cy - (cy - ty) * ratio;
+        }
+        if (scale === 1) { tx = 0; ty = 0; }
+        apply();
+    }, { passive: false });
+
+    // Drag to pan ---------------------------------------------------
+    let dragging = false, startX = 0, startY = 0, baseTx = 0, baseTy = 0;
+    viewport.addEventListener('pointerdown', (e) => {
+        if (scale <= 1) return;
+        dragging = true;
+        startX = e.clientX; startY = e.clientY;
+        baseTx = tx; baseTy = ty;
+        viewport.setPointerCapture(e.pointerId);
+        viewport.classList.remove('cursor-grab');
+        viewport.classList.add('cursor-grabbing');
+    });
+    viewport.addEventListener('pointermove', (e) => {
+        if (!dragging) return;
+        tx = baseTx + (e.clientX - startX);
+        ty = baseTy + (e.clientY - startY);
+        apply();
+    });
+    const endDrag = (e) => {
+        if (!dragging) return;
+        dragging = false;
+        try { viewport.releasePointerCapture(e.pointerId); } catch (_) {}
+        viewport.classList.add('cursor-grab');
+        viewport.classList.remove('cursor-grabbing');
+    };
+    viewport.addEventListener('pointerup', endDrag);
+    viewport.addEventListener('pointercancel', endDrag);
+
+    // Double-click toggles zoom -------------------------------------
+    viewport.addEventListener('dblclick', () => {
+        if (scale === 1) { scale = 2.5; } else { reset(); return; }
+        apply();
+    });
+})();
+</script>
+{% endblock %}

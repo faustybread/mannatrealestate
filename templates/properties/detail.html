@@ -1,0 +1,357 @@
+{% extends "base.html" %}
+{% load rupees %}
+
+{% block title %}{{ property.title }} · MR Estates Rohtak{% endblock %}
+{% block meta_description %}{{ property.description|truncatewords:30 }}{% endblock %}
+
+{% block content %}
+
+{# HERO — full-viewport primary image with glass overlay #}
+<section class="relative isolate min-h-[92vh] flex items-end overflow-hidden">
+    <div class="absolute inset-0 -z-10">
+        {% if property.primary_image %}
+        <img src="{{ property.primary_image.url }}" alt="{{ property.title }}"
+             class="h-full w-full object-cover object-center" loading="eager" fetchpriority="high">
+        {% else %}
+        <div class="h-full w-full bg-gradient-to-br from-midnight-500 to-midnight-900"></div>
+        {% endif %}
+        <div class="absolute inset-0 bg-gradient-to-t from-midnight-900 via-midnight-900/40 to-midnight-900/20"></div>
+        <div class="absolute inset-0 bg-gradient-to-r from-midnight-900/50 via-transparent to-transparent"></div>
+    </div>
+
+    <div class="mx-auto max-w-7xl w-full px-4 sm:px-6 pb-12 sm:pb-16 md:pb-24 pt-32 sm:pt-36 md:pt-40 relative">
+        <a href="{% url 'properties:list' %}"
+           class="inline-flex items-center gap-2 text-xs uppercase tracking-widest text-white/60 hover:text-white transition mb-6 sm:mb-8 animate-fade-up">
+            ← Back to all properties
+        </a>
+
+        <div class="glass-strong inline-block rounded-full px-4 py-1.5 mb-4 sm:mb-6 animate-fade-up max-w-full">
+            <span class="text-[0.65rem] uppercase tracking-widest text-champagne-200 break-words">{{ property.location }}</span>
+        </div>
+
+        <h1 class="font-display text-3xl sm:text-5xl md:text-7xl lg:text-8xl font-light leading-[1.08] md:leading-[1.02] tracking-tight text-white max-w-4xl animate-fade-up [animation-delay:80ms] break-words">
+            {{ property.title }}
+        </h1>
+
+        <div class="mt-6 sm:mt-8 flex flex-wrap items-baseline gap-x-6 sm:gap-x-8 gap-y-2 sm:gap-y-3 animate-fade-up [animation-delay:200ms]">
+            <p class="font-display text-3xl md:text-4xl text-champagne-200 tracking-tight whitespace-nowrap">{{ property.price|inr }}</p>
+            <p class="text-sm text-white/60 font-sans tracking-wide">{{ property.price|inr_full }}</p>
+            <p class="text-xs uppercase tracking-widest text-white/50">Guide price · Site visits by appointment</p>
+        </div>
+    </div>
+</section>
+
+
+<div class="mx-auto max-w-7xl px-4 sm:px-6 py-16 md:py-24 grid gap-12 md:gap-16 grid-cols-1 lg:grid-cols-3">
+
+    {# ═══════════════ Left column · content ═══════════════ #}
+    <div class="lg:col-span-2 space-y-14 md:space-y-20">
+
+        {# ── Specifications grid ─────────────────────────── #}
+        <section class="reveal reveal-up">
+            <p class="eyebrow mb-6">
+                <span class="inline-block h-px w-8 align-middle bg-champagne-300/70 mr-3"></span>
+                Specifications
+            </p>
+            <div class="glass rounded-3xl p-6 sm:p-8 md:p-10 grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 md:gap-4">
+                <div>
+                    <p class="text-[0.65rem] uppercase tracking-widest text-white/40 mb-2 sm:mb-3 font-sans">Bedrooms</p>
+                    <p class="font-display text-3xl sm:text-4xl font-light text-white tracking-tight">
+                        {{ property.bedrooms }}
+                        <span class="text-sm font-sans tracking-widest text-white/40 ml-1 align-top">BHK</span>
+                    </p>
+                </div>
+                <div>
+                    <p class="text-[0.65rem] uppercase tracking-widest text-white/40 mb-2 sm:mb-3 font-sans">Bathrooms</p>
+                    <p class="font-display text-3xl sm:text-4xl font-light text-white tracking-tight">{{ property.bathrooms }}</p>
+                </div>
+                <div>
+                    <p class="text-[0.65rem] uppercase tracking-widest text-white/40 mb-2 sm:mb-3 font-sans">Built-up area</p>
+                    <p class="font-display text-3xl sm:text-4xl font-light text-white tracking-tight">
+                        {{ property.square_footage|floatformat:0 }}
+                        <span class="text-sm font-sans tracking-widest text-white/40 ml-1 align-top">sq. ft.</span>
+                    </p>
+                </div>
+                <div>
+                    <p class="text-[0.65rem] uppercase tracking-widest text-white/40 mb-2 sm:mb-3 font-sans">Reference</p>
+                    <p class="font-display text-3xl sm:text-4xl font-light text-white tracking-tight">
+                        MR
+                        <span class="text-sm font-sans tracking-widest text-white/40 ml-0.5 align-top">·{{ property.id|stringformat:"03d" }}</span>
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        {# ── Description ────────────────────────────────── #}
+        <section class="reveal reveal-up" data-delay="80">
+            <p class="eyebrow mb-6">
+                <span class="inline-block h-px w-8 align-middle bg-champagne-300/70 mr-3"></span>
+                About this property
+            </p>
+            <div class="prose prose-invert prose-lg max-w-none font-sans font-light text-white/80 leading-relaxed">
+                {{ property.description|linebreaks }}
+            </div>
+        </section>
+
+        {# ── Location · Google Maps embed ────────────────── #}
+        {% if property.latitude is not None and property.longitude is not None %}
+        <section id="location">
+            <p class="eyebrow mb-6">
+                <span class="inline-block h-px w-8 align-middle bg-champagne-300/70 mr-3"></span>
+                Location
+            </p>
+
+            <div class="glass-strong rounded-3xl p-3 md:p-4 overflow-hidden">
+                <div class="flex flex-col sm:flex-row sm:flex-wrap sm:items-center sm:justify-between gap-3 sm:gap-4 px-4 md:px-5 pt-3 pb-4">
+                    <div class="min-w-0">
+                        <p class="font-display text-white text-lg md:text-xl tracking-tight break-words">{{ property.location }}</p>
+                        <p class="mt-1 text-[0.65rem] uppercase tracking-widest text-white/40">
+                            {{ property.latitude|floatformat:6 }}° N &nbsp;·&nbsp; {{ property.longitude|floatformat:6 }}° E
+                        </p>
+                    </div>
+                    <a href="https://www.google.com/maps/dir/?api=1&destination={{ property.latitude }},{{ property.longitude }}"
+                       target="_blank" rel="noopener"
+                       class="btn-ghost text-xs uppercase tracking-widest justify-center sm:justify-start w-full sm:w-auto">
+                        Directions
+                        <span aria-hidden="true">↗</span>
+                    </a>
+                </div>
+
+                <div class="relative aspect-[4/3] sm:aspect-[16/10] md:aspect-[16/9] rounded-2xl overflow-hidden ring-1 ring-white/10">
+                    {# Google Maps embed — no API key required. The `q=lat,lng` #}
+                    {# pattern centres and drops a pin on the exact coordinates. #}
+                    <iframe
+                        src="https://maps.google.com/maps?q={{ property.latitude }},{{ property.longitude }}&hl=en&z=15&output=embed"
+                        class="absolute inset-0 h-full w-full border-0"
+                        style="filter: saturate(0.85) contrast(0.95);"
+                        loading="lazy"
+                        referrerpolicy="no-referrer-when-downgrade"
+                        allowfullscreen
+                        title="Map of {{ property.title }}"></iframe>
+
+                    {# Subtle glass frame to keep the map on-brand. #}
+                    <div aria-hidden="true" class="pointer-events-none absolute inset-0 ring-1 ring-inset ring-white/[0.06] rounded-2xl"></div>
+                </div>
+            </div>
+        </section>
+        {% endif %}
+
+        {# ── Features list (if any) ────────────────────── #}
+        {% if property.features_list %}
+        <section class="reveal reveal-up" data-delay="60">
+            <p class="eyebrow mb-6">
+                <span class="inline-block h-px w-8 align-middle bg-champagne-300/70 mr-3"></span>
+                Distinguishing features
+            </p>
+            <div class="glass rounded-3xl p-6 sm:p-8 md:p-10">
+                <ul class="grid gap-x-6 sm:gap-x-8 gap-y-3 sm:gap-y-4 grid-cols-1 sm:grid-cols-2 text-white/80">
+                    {% for feature in property.features_list %}
+                    <li class="flex items-start gap-3">
+                        <span class="mt-2 h-1 w-4 rounded-full bg-champagne-300/70 shrink-0"></span>
+                        <span class="font-light">{{ feature }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </section>
+        {% endif %}
+
+        {# ── Gallery carousel ──────────────────────────── #}
+        {% if property.gallery_images.exists %}
+        <section id="gallery">
+            <div class="flex items-end justify-between mb-6">
+                <p class="eyebrow">
+                    <span class="inline-block h-px w-8 align-middle bg-champagne-300/70 mr-3"></span>
+                    Gallery · {{ property.gallery_images.count }} views
+                </p>
+                <div class="flex gap-2">
+                    <button type="button" data-carousel-prev
+                            class="glass h-10 w-10 rounded-full flex items-center justify-center text-white/80 hover:text-white hover:bg-white/[0.12] transition"
+                            aria-label="Previous image">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+                    </button>
+                    <button type="button" data-carousel-next
+                            class="glass h-10 w-10 rounded-full flex items-center justify-center text-white/80 hover:text-white hover:bg-white/[0.12] transition"
+                            aria-label="Next image">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg>
+                    </button>
+                </div>
+            </div>
+
+            <div data-carousel class="glass rounded-3xl p-3 relative overflow-hidden">
+                {# Scroller — snapped, horizontally scrollable, one image per view. #}
+                <div data-carousel-track
+                     class="flex gap-3 overflow-x-auto snap-x snap-mandatory scroll-smooth
+                            [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                    {% for img in property.gallery_images.all %}
+                    <figure class="snap-center shrink-0 w-full">
+                        <div class="aspect-[16/10] rounded-2xl overflow-hidden">
+                            <img src="{{ img.image.url }}" alt="{{ img.caption|default:property.title }}"
+                                 class="h-full w-full object-cover" loading="lazy">
+                        </div>
+                        {% if img.caption %}
+                        <figcaption class="mt-3 px-2 text-xs uppercase tracking-widest text-white/50">{{ img.caption }}</figcaption>
+                        {% endif %}
+                    </figure>
+                    {% endfor %}
+                </div>
+
+                {# Dot indicators. #}
+                <div class="mt-4 flex items-center justify-center gap-2" data-carousel-dots>
+                    {% for img in property.gallery_images.all %}
+                    <button type="button" data-carousel-goto="{{ forloop.counter0 }}"
+                            class="h-1.5 rounded-full transition-all
+                                   {% if forloop.first %}w-8 bg-champagne-300{% else %}w-1.5 bg-white/25 hover:bg-white/50{% endif %}"
+                            aria-label="Jump to image {{ forloop.counter }}"></button>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+        {% endif %}
+    </div>
+
+
+    {# ═══════════════ Right column · floating contact ═══════════════ #}
+    <aside class="lg:col-span-1 reveal reveal-right" data-delay="150">
+        <div class="lg:sticky lg:top-32 space-y-6">
+            <div class="glass-strong rounded-3xl p-8">
+                <p class="eyebrow mb-4">Direct Site Visit</p>
+                <h3 class="font-display text-2xl font-light text-white leading-tight tracking-tight">
+                    Schedule a<br>
+                    <span class="italic text-champagne-200">site visit.</span>
+                </h3>
+                <p class="mt-3 text-sm text-white/60 leading-relaxed">
+                    Talk to MR Estates directly &mdash; no third-party brokers, no gimmicks.
+                </p>
+
+                <form class="site-visit-form mt-6 space-y-4"
+                      data-submit-url="{% url 'portal:submit_site_visit' %}"
+                      novalidate>
+                    {% csrf_token %}
+                    <input type="hidden" name="property_ref" value="{{ property.slug }}">
+
+                    <div>
+                        <label for="sv-name-dp" class="form-label">Your Name</label>
+                        <input id="sv-name-dp" name="name" type="text" required
+                               class="form-input" placeholder="Full name">
+                    </div>
+                    <div>
+                        <label for="sv-phone-dp" class="form-label">WhatsApp / Phone</label>
+                        <input id="sv-phone-dp" name="phone" type="tel" required
+                               class="form-input" placeholder="+91 98765 43210">
+                    </div>
+                    <div>
+                        <label for="sv-location-dp" class="form-label">Preferred Location</label>
+                        <select id="sv-location-dp" name="preferred_location" required
+                                class="form-input appearance-none cursor-pointer">
+                            <option class="bg-midnight-800" value="{{ property.location }}" selected>{{ property.location }}</option>
+                            <option class="bg-midnight-800" value="Suncity Township">Suncity Township</option>
+                            <option class="bg-midnight-800" value="Omaxe City">Omaxe City</option>
+                            <option class="bg-midnight-800" value="HUDA Sectors">HUDA Sectors</option>
+                            <option class="bg-midnight-800" value="Open to suggestions">Open to Suggestions</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn-cta w-full mt-2 sv-submit-btn text-sm">
+                        <span class="tracking-widest text-xs uppercase sv-btn-label">Request Site Visit</span>
+                        <span aria-hidden="true" class="sv-btn-arrow">→</span>
+                    </button>
+
+                    <p class="sv-feedback text-center text-sm mt-3 hidden"></p>
+
+                    <p class="text-center text-[0.65rem] uppercase tracking-widest text-white/30 pt-1">
+                        We respond within a few hours · IST
+                    </p>
+                </form>
+            </div>
+
+            <div class="glass rounded-3xl p-6 flex items-center gap-4">
+                <div class="h-12 w-12 shrink-0 rounded-full bg-gradient-to-br from-champagne-200 to-champagne-500"></div>
+                <div>
+                    <p class="text-[0.65rem] uppercase tracking-widest text-white/40">Your advisor</p>
+                    <p class="text-white text-sm mt-0.5">MR Estates · Rohtak Desk</p>
+                    <p class="text-xs text-white/50 mt-0.5">contact@mrestates.in</p>
+                </div>
+            </div>
+        </div>
+    </aside>
+</div>
+
+
+{# YOU MAY ALSO CONSIDER #}
+{% if related_properties %}
+<section class="mx-auto max-w-7xl px-4 sm:px-6 pb-24 md:pb-32">
+    <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-8 md:mb-10">
+        <div>
+            <p class="eyebrow mb-3">You may also consider</p>
+            <h2 class="font-display text-2xl sm:text-3xl md:text-4xl font-light tracking-tight text-white">
+                Similar properties in Rohtak.
+            </h2>
+        </div>
+        <a href="{% url 'properties:list' %}" class="btn-ghost text-xs uppercase tracking-widest self-start sm:self-auto">Browse all →</a>
+    </div>
+
+    <div class="grid gap-5 sm:gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
+        {% for other in related_properties %}
+        <a href="{{ other.get_absolute_url }}"
+           class="group glass glass-hover rounded-2xl overflow-hidden flex flex-col">
+            <div class="relative aspect-[16/10] overflow-hidden">
+                {% if other.primary_image %}
+                <img src="{{ other.primary_image.url }}" alt="{{ other.title }}"
+                     class="h-full w-full object-cover transition duration-[900ms] group-hover:scale-105">
+                {% else %}
+                <div class="h-full w-full bg-gradient-to-br from-midnight-600 to-midnight-800"></div>
+                {% endif %}
+            </div>
+            <div class="p-5">
+                <p class="text-[0.6rem] uppercase tracking-widest text-white/40">{{ other.location }}</p>
+                <p class="font-display text-lg text-white mt-1 tracking-tight line-clamp-1">{{ other.title }}</p>
+                <p class="text-champagne-200 text-sm mt-2 font-display tracking-wide whitespace-nowrap">{{ other.price|inr }}</p>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+
+{% endblock %}
+
+
+{# Carousel behaviour — minimal vanilla JS #}
+{% block extra_body %}
+<script>
+(function () {
+    const root = document.querySelector('[data-carousel]');
+    if (!root) return;
+
+    const track = root.querySelector('[data-carousel-track]');
+    const dots  = Array.from(root.querySelectorAll('[data-carousel-goto]'));
+    const prev  = document.querySelector('[data-carousel-prev]');
+    const next  = document.querySelector('[data-carousel-next]');
+
+    const step = () => track.clientWidth + 12; // slide width + gap-3
+
+    prev && prev.addEventListener('click', () => track.scrollBy({ left: -step(), behavior: 'smooth' }));
+    next && next.addEventListener('click', () => track.scrollBy({ left:  step(), behavior: 'smooth' }));
+
+    dots.forEach((dot, i) => dot.addEventListener('click', () => {
+        track.scrollTo({ left: i * step(), behavior: 'smooth' });
+    }));
+
+    // Highlight the dot for whichever slide is currently in view.
+    const io = new IntersectionObserver((entries) => {
+        entries.forEach((e) => {
+            if (!e.isIntersecting) return;
+            const idx = Array.from(track.children).indexOf(e.target);
+            dots.forEach((d, i) => {
+                d.classList.toggle('w-8', i === idx);
+                d.classList.toggle('bg-champagne-300', i === idx);
+                d.classList.toggle('w-1.5', i !== idx);
+                d.classList.toggle('bg-white/25', i !== idx);
+            });
+        });
+    }, { root: track, threshold: 0.6 });
+    Array.from(track.children).forEach((slide) => io.observe(slide));
+})();
+</script>
+{% endblock %}
