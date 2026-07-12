@@ -1,0 +1,22 @@
+{
+  "builds": [
+    {
+      "src": "luxury_realestate/wsgi.py",
+      "use": "@vercel/python"
+    },
+    {
+      "src": "media/**",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/media/(.*)",
+      "dest": "/media/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "luxury_realestate/wsgi.py"
+    }
+  ]
+}

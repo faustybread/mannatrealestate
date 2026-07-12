@@ -2,9 +2,11 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView, LogoutView
 from django.db.models import Count, Sum
-from django.http import JsonResponse
+from django.http import Http404, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
+from django.utils import timezone
+from django.utils.dateparse import parse_datetime
 from django.views.decorators.http import require_POST
 
 from properties.models import Property, PropertyImage, SectorMap
@@ -36,7 +38,7 @@ def dashboard(request):
         'draft_count':      qs.filter(is_published=False).count(),
         'total_portfolio_value': stats['total_value'] or 0,
         'recent_properties': qs.order_by('-created_at')[:12],
-        'new_leads_count': leads_qs.filter(is_contacted=False).count(),
+        'new_leads_count': leads_qs.filter(status=SiteVisitLead.STATUS_PENDING).count(),
         'total_leads_count': leads_qs.count(),
         'new_seller_count': seller_qs.filter(status='pending').count(),
         'total_seller_count': seller_qs.count(),
@@ -174,15 +176,29 @@ def submit_site_visit(request):
     name = request.POST.get('name', '').strip()
     phone = request.POST.get('phone', '').strip()
     preferred_location = request.POST.get('preferred_location', '').strip()
+    preferred_datetime_raw = request.POST.get('preferred_datetime', '').strip()
     property_ref = request.POST.get('property_ref', '').strip()
 
     if not name or not phone or not preferred_location:
         return JsonResponse({'ok': False, 'error': 'Please fill in all required fields.'}, status=400)
 
+    # Preferred date/time is optional. The <input type="datetime-local"> sends
+    # "YYYY-MM-DDTHH:MM" when filled in; leave it null otherwise.
+    preferred_datetime = None
+    if preferred_datetime_raw:
+        preferred_datetime = parse_datetime(preferred_datetime_raw)
+        if preferred_datetime is None:
+            return JsonResponse({'ok': False, 'error': 'Please choose a valid date and time.'}, status=400)
+        if timezone.is_naive(preferred_datetime):
+            preferred_datetime = timezone.make_aware(
+                preferred_datetime, timezone.get_current_timezone()
+            )
+
     SiteVisitLead.objects.create(
         name=name,
         phone=phone,
         preferred_location=preferred_location,
+        preferred_datetime=preferred_datetime,
         property_ref=property_ref,
     )
     return JsonResponse({'ok': True})
@@ -190,19 +206,39 @@ def submit_site_visit(request):
 
 @login_required(login_url='portal:login')
 def site_visit_leads(request):
-    """Portal dashboard — list of incoming site visit enquiries."""
+    """Portal — incoming site visit requests with accept/decline workflow."""
     if request.method == 'POST':
         lead_id = request.POST.get('lead_id')
-        if lead_id:
+        new_status = request.POST.get('status')
+        valid_statuses = {s[0] for s in SiteVisitLead.STATUS_CHOICES}
+        if lead_id and new_status in valid_statuses:
             lead = get_object_or_404(SiteVisitLead, id=lead_id)
-            lead.is_contacted = not lead.is_contacted
+            lead.status = new_status
             lead.save()
         return redirect('portal:site_visit_leads')
 
     leads = SiteVisitLead.objects.all()
+    # Agenda: accepted visits still in the future, soonest first.
+    upcoming = (leads.filter(status=SiteVisitLead.STATUS_ACCEPTED,
+                             preferred_datetime__gte=timezone.now())
+                     .order_by('preferred_datetime'))
     context = {
         'leads': leads,
-        'new_count': leads.filter(is_contacted=False).count(),
+        'upcoming': upcoming,
+        'pending_count': leads.filter(status=SiteVisitLead.STATUS_PENDING).count(),
+        'accepted_count': leads.filter(status=SiteVisitLead.STATUS_ACCEPTED).count(),
         'total_count': leads.count(),
     }
     return render(request, 'portal/leads.html', context)
+
+
+@login_required(login_url='portal:login')
+def site_visit_calendar(request, lead_id):
+    """Download an accepted visit as an .ics file (Apple Calendar / Outlook)."""
+    lead = get_object_or_404(SiteVisitLead, id=lead_id)
+    ics = lead.ics_content
+    if not ics:
+        raise Http404('This lead has no scheduled date/time.')
+    response = HttpResponse(ics, content_type='text/calendar; charset=utf-8')
+    response['Content-Disposition'] = f'attachment; filename="site-visit-{lead.id}.ics"'
+    return response

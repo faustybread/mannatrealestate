@@ -16,6 +16,7 @@ urlpatterns = [
     path('sector-maps/<slug:slug>/delete/', views.sector_map_delete, name='sector_map_delete'),
     path('leads/', views.site_visit_leads, name='site_visit_leads'),
     path('leads/submit/', views.submit_site_visit, name='submit_site_visit'),
+    path('leads/<int:lead_id>/calendar.ics', views.site_visit_calendar, name='site_visit_calendar'),
     path('properties/<slug:slug>/delete/', views.property_delete, name='property_delete'),
     path('seller-leads/', views.seller_leads, name='seller_leads'),
     path('seller-leads/submit/', views.submit_seller, name='submit_seller'),

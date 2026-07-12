@@ -1,0 +1,22 @@
+# When this file exists, Vercel uses it INSTEAD of .gitignore to decide what to
+# upload. So we must re-list dev-only junk here — but NOT staticfiles/, media/,
+# or db.sqlite3, which the demo needs bundled into the deployment.
+
+.env
+.env.*
+!.env.example
+
+venv/
+env/
+.venv/
+
+__pycache__/
+*.pyc
+*.pyo
+
+node_modules/
+theme/static_src/node_modules/
+
+.git/
+.DS_Store
+*.log

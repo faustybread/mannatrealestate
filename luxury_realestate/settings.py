@@ -26,14 +26,27 @@ if _env_file.exists():
                 _key, _, _val = _line.partition('=')
                 os.environ.setdefault(_key.strip(), _val.strip())
 
+# Are we running on Vercel? (Vercel sets VERCEL=1 in the environment.)
+ON_VERCEL = os.environ.get('VERCEL') == '1'
+
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
+# On Vercel (demo deploy) fall back to a throwaway key so the app never crashes
+# when no env var is configured. Set DJANGO_SECRET_KEY for a real deployment.
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY') or (
+    'django-insecure-vercel-demo-key-not-for-production' if ON_VERCEL
+    else os.environ['DJANGO_SECRET_KEY']
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DJANGO_DEBUG', 'False').lower() in ('1', 'true', 'yes')
 
 _raw_hosts = os.environ.get('DJANGO_ALLOWED_HOSTS', '')
 ALLOWED_HOSTS = [h.strip() for h in _raw_hosts.split(',') if h.strip()]
+
+# Allow any *.vercel.app deployment domain automatically.
+if ON_VERCEL:
+    ALLOWED_HOSTS.append('.vercel.app')
+    CSRF_TRUSTED_ORIGINS = ['https://*.vercel.app']
 
 
 # Application definition
@@ -68,6 +81,9 @@ INTERNAL_IPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    # WhiteNoise serves static files directly from the app (needed on Vercel's
+    # serverless runtime, which has no separate static file server).
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -107,6 +123,18 @@ DATABASES = {
     }
 }
 
+# On Vercel the project filesystem is read-only, so SQLite can't write there.
+# Copy the bundled database to /tmp (the only writable path) at startup so
+# logins/sessions/bookings work. NOTE: /tmp is ephemeral — writes are lost when
+# the serverless container recycles. This is fine for a demo, not real data.
+if ON_VERCEL:
+    import shutil
+    _tmp_db = Path('/tmp/db.sqlite3')
+    _bundled_db = BASE_DIR / 'db.sqlite3'
+    if not _tmp_db.exists() and _bundled_db.exists():
+        shutil.copy(_bundled_db, _tmp_db)
+    DATABASES['default']['NAME'] = _tmp_db
+
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -145,6 +173,16 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+# Let WhiteNoise compress and serve the collected static files.
+STORAGES = {
+    'default': {
+        'BACKEND': 'django.core.files.storage.FileSystemStorage',
+    },
+    'staticfiles': {
+        'BACKEND': 'whitenoise.storage.CompressedStaticFilesStorage',
+    },
+}
 
 # Media files (user-uploaded content — property photos, gallery images, etc.)
 MEDIA_URL = 'media/'

@@ -12,7 +12,10 @@ urlpatterns = [
     path('', include('properties.urls', namespace='properties')),
 ]
 
-# In DEBUG, serve user-uploaded media (property photos) via the dev server.
-if settings.DEBUG:
+# Serve user-uploaded media (property photos). WhiteNoise handles /static/, but
+# not /media/, so we serve it through Django. This runs in DEBUG locally and on
+# Vercel (where there's no separate media server) — fine for a demo.
+if settings.DEBUG or getattr(settings, 'ON_VERCEL', False):
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
