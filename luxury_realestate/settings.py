@@ -116,24 +116,26 @@ WSGI_APPLICATION = 'luxury_realestate.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+# Database
+# Use a hosted Postgres (e.g. Supabase) in production via DATABASE_URL.
+# Falls back to local SQLite for development when DATABASE_URL is unset.
+_database_url = os.environ.get('DATABASE_URL')
+if _database_url:
+    import dj_database_url
+    DATABASES = {
+        'default': dj_database_url.parse(
+            _database_url,
+            conn_max_age=600,
+            ssl_require=True,
+        )
     }
-}
-
-# On Vercel the project filesystem is read-only, so SQLite can't write there.
-# Copy the bundled database to /tmp (the only writable path) at startup so
-# logins/sessions/bookings work. NOTE: /tmp is ephemeral — writes are lost when
-# the serverless container recycles. This is fine for a demo, not real data.
-if ON_VERCEL:
-    import shutil
-    _tmp_db = Path('/tmp/db.sqlite3')
-    _bundled_db = BASE_DIR / 'db.sqlite3'
-    if not _tmp_db.exists() and _bundled_db.exists():
-        shutil.copy(_bundled_db, _tmp_db)
-    DATABASES['default']['NAME'] = _tmp_db
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 
 # Password validation
